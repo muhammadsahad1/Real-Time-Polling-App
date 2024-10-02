@@ -1,0 +1,53 @@
+import React, { useState } from "react"
+import axiosInstance from "../../Axios"
+import { ILoginRequest, ILoginResponse } from "../../type"
+import toast from "react-hot-toast"
+import { useNavigate } from "react-router-dom"
+
+const Login = () => {
+    const [password, setPassoword] = useState<string>('')
+    const [userEmail, setUserEmail] = useState<string>('')
+    const navigate = useNavigate()
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
+        const loginData: ILoginRequest = { userEmail, password }
+        try {
+            const response = await axiosInstance.post<ILoginResponse>('/user/login', loginData)
+            const { message } = response.data;
+            if (response.status === 200) {
+                navigate('/home')
+            } else {
+                toast.error(message)
+            }
+
+        } catch (error: any) {
+            toast.error(error)
+        }
+
+    }
+
+    return (
+        <div className="login-container">
+
+            <form className="login-form" onSubmit={handleSubmit}>
+                <h2 className="login-heading">Login</h2>
+
+                <div className="form-group">
+                    <label htmlFor="email">Email</label>
+                    <input type="email" placeholder="Enter you email" id="email" value={userEmail} onChange={(e) => setUserEmail(e.target.value)} />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="password">Password</label>
+                    <input type="password" placeholder="Enter you password" id="password" value={password} onChange={(e) => setPassoword(e.target.value)} />
+                </div>
+
+                <button type="submit" className="login-btn"> Login In </button>
+            </form>
+        </div>
+    )
+}
+
+export default Login
