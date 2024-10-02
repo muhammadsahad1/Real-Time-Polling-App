@@ -2,27 +2,38 @@ import React, { useState } from "react";
 import { ISignupRequest, ISignupResponse } from "../../type";
 import axiosInstance from "../../Axios";
 import toast from "react-hot-toast";
+import useUserStore, { SetUserActionType } from "../../store/useUserStore";
+import { Link } from "react-router-dom";
 
 const Signup = () => {
     const [userName, setUsername] = useState<string>("");
     const [userEmail, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
+    const setUser = useUserStore((state) => state.setUser)
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault()
 
         const signupData: ISignupRequest = { userName, userEmail, password }
         try {
-            const response = await axiosInstance.post<ISignupResponse>('/user/signup', signupData)
-            const { message } = response.data
+            const response = await axiosInstance.post<ISignupResponse>('/users/register', signupData)
+            console.log("res in signup =>", response.data)
+            const { message, id } = response.data
             if (response.status === 201) {
-                // const { userEmail, userName, password } = response.data
-                toast.success(message)
+                toast.success("Register successfull")
+                
+                setUser({ type: SetUserActionType.UserId, value: id })
+                setUser({ type: SetUserActionType.Email, value: userEmail })
+                setUser({ type: SetUserActionType.Name, value: userName })
+
             } else {
+
+
                 toast.error(message)
             }
         } catch (error: any) {
-            toast.error(error)
+            toast.error(error.response.data.message || "An error occurred");
         }
 
     };
@@ -69,6 +80,9 @@ const Signup = () => {
                         Register
                     </button>
                 </div>
+                <p className="login-link">
+                    Don't have an account? <Link to="/login">Login here</Link>
+                </p>
             </form>
         </div>
     );

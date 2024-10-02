@@ -1,64 +1,3 @@
-/* :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-} */
-
 body {
   margin: 0;
   display: flex;
@@ -93,7 +32,8 @@ body {
   font-size: x-large;
 }
 
-.login-container {
+.login-container,
+.signup-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -102,7 +42,8 @@ body {
   margin: 0;
 }
 
-.login-heading {
+.login-heading,
+.signup-heading {
   text-align: center;
   margin-bottom: 1.5rem;
   color: #333;
@@ -111,6 +52,7 @@ body {
 }
 
 .form-group {
+  width: 100%; /* Ensures the form group takes the full width */
   margin-bottom: 1.5rem;
 }
 
@@ -122,11 +64,12 @@ body {
 }
 
 .form-group input {
-  width: 100%;
+  width: 100%; /* Full width for input */
   padding: 0.75rem;
   border-radius: 4px;
   border: 1px solid #ccc;
   font-size: 1rem;
+  box-sizing: border-box; /* Ensure padding is included in width calculation */
 }
 
 .form-group input:focus {
@@ -134,8 +77,9 @@ body {
   outline: none;
 }
 
-.login-btn {
-  width: 100%;
+.login-btn,
+.signup-btn {
+  width: 100%; 
   padding: 0.75rem;
   background-color: #0e0e0e;
   color: white;
@@ -143,77 +87,18 @@ body {
   border-radius: 4px;
   font-size: 1rem;
   cursor: pointer;
-  margin-left: 10px;
+  margin-top: 10px;
   letter-spacing: 1px;
-  
+  box-sizing: border-box; */
 }
 
-.login-btn:hover {
+.login-btn:hover,
+.signup-btn:hover {
   background-color: #141414;
 }
-
-
-
-/* Styling for the Signup page */
-.signup-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-.signup-heading {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: #333;
-  font-size: 1.5rem;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #333;
-  font-size: small;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-}
-
-.form-group input:focus {
-  border-color: #1c1c1c;
-  outline: none;
-}
-
-.signup-btn {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #0e0e0e;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  margin-left: 10px;
-  letter-spacing: 1px;
-  cursor: pointer;
-}
-
-.signup-btn:hover {
-  background-color: #0e0e0e;
-}
-
 
 .sumbitDiv {
   display: flex;
   justify-content: center;
   align-items: center;
-
 }

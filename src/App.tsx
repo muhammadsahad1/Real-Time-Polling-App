@@ -10,12 +10,12 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Toaster />
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<SignupPage />} />
         {/* <Navbar /> */}
-        <Route path="/home" element={<HomePage />} />
+        <Route path="/" element={<HomePage />} />
       </Routes>
+      <Toaster />
     </Router>
   )
 }

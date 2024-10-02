@@ -13,7 +13,7 @@ export interface ILoginResponse {
     token: string,
     userId: number,
     userName: string,
-    message : string
+    message: string
 }
 
 export interface ISignupResponse {
@@ -21,4 +21,5 @@ export interface ISignupResponse {
     userEmail: string,
     password: string,
     message: string
+    id: number
 }

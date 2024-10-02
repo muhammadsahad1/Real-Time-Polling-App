@@ -3,6 +3,7 @@ import axiosInstance from "../../Axios"
 import { ILoginRequest, ILoginResponse } from "../../type"
 import toast from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 const Login = () => {
     const [password, setPassoword] = useState<string>('')
@@ -14,10 +15,11 @@ const Login = () => {
 
         const loginData: ILoginRequest = { userEmail, password }
         try {
-            const response = await axiosInstance.post<ILoginResponse>('/user/login', loginData)
+            const response = await axiosInstance.post<ILoginResponse>('/users/login', loginData)
+            console.log("res in login =>",response.data)
             const { message } = response.data;
             if (response.status === 200) {
-                navigate('/home')
+                navigate('/')
             } else {
                 toast.error(message)
             }
@@ -45,6 +47,10 @@ const Login = () => {
                 </div>
 
                 <button type="submit" className="login-btn"> Login In </button>
+
+                <p className="signup-link">
+                    Don't have an account? <Link to="/register">Register here</Link>
+                </p>
             </form>
         </div>
     )
