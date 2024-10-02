@@ -1,6 +1,3 @@
-Certainly! Here’s a customized `README.md` template for your **Real-Time Polling Application with Chat Feature**, which is built using **React + TypeScript + Vite**:
-
----
 
 # Real-Time Polling Application with Chat Feature
 
