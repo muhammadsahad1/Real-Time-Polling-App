@@ -10,9 +10,11 @@ export interface ISignupRequest {
 }
 
 export interface ILoginResponse {
-    token: string,
-    userId: number,
-    userName: string,
+    findUser: {
+        _id: string,
+        name: string,
+        email: string,
+    },
     message: string
 }
 

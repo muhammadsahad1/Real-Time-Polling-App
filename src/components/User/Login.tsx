@@ -4,11 +4,14 @@ import { ILoginRequest, ILoginResponse } from "../../type"
 import toast from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
 import { Link } from "react-router-dom"
+import useUserStore, { SetUserActionType } from "../../store/useUserStore"
 
 const Login = () => {
     const [password, setPassoword] = useState<string>('')
     const [userEmail, setUserEmail] = useState<string>('')
+
     const navigate = useNavigate()
+    const setUser = useUserStore((state) => state.setUser)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -16,9 +19,15 @@ const Login = () => {
         const loginData: ILoginRequest = { userEmail, password }
         try {
             const response = await axiosInstance.post<ILoginResponse>('/users/login', loginData)
-            console.log("res in login =>",response.data)
+            console.log("res in login =>", response.data)
             const { message } = response.data;
             if (response.status === 200) {
+                const { _id, name, email } = response.data.findUser
+
+                setUser({ type: SetUserActionType.UserId, value: _id })
+                setUser({ type: SetUserActionType.Email, value: email })
+                setUser({ type: SetUserActionType.Name, value: name })
+                toast.success('Login successfull')
                 navigate('/')
             } else {
                 toast.error(message)

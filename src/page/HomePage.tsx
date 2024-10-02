@@ -1,9 +1,9 @@
-import Navbar from '../components/User/Navbar'
+import Home from '../components/User/Home'
 
-const HomePage = () => {
+const HomePage:React.FC = () => {
   return (
     <>
-    <Navbar/>
+      <Home />
     </>
   )
 }

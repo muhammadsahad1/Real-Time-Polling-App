@@ -4,12 +4,14 @@ import axiosInstance from "../../Axios";
 import toast from "react-hot-toast";
 import useUserStore, { SetUserActionType } from "../../store/useUserStore";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
     const [userName, setUsername] = useState<string>("");
     const [userEmail, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
+    const navigate = useNavigate()
     const setUser = useUserStore((state) => state.setUser)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
@@ -19,17 +21,12 @@ const Signup = () => {
         try {
             const response = await axiosInstance.post<ISignupResponse>('/users/register', signupData)
             console.log("res in signup =>", response.data)
-            const { message, id } = response.data
+            const { message } = response.data
             if (response.status === 201) {
                 toast.success("Register successfull")
-                
-                setUser({ type: SetUserActionType.UserId, value: id })
-                setUser({ type: SetUserActionType.Email, value: userEmail })
-                setUser({ type: SetUserActionType.Name, value: userName })
+                navigate('/login')
 
             } else {
-
-
                 toast.error(message)
             }
         } catch (error: any) {
