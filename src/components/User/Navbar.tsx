@@ -9,7 +9,6 @@ const Navbar = () => {
 
     const handleLogout = () => {
         clearUserState();
-        navigate('/')
         toast.success('Successfully logged out!');
     }
 

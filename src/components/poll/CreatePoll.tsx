@@ -2,17 +2,21 @@ import React, { useState } from 'react';
 import usePollStore from '../../store/usePollStore';
 import useUserStore from '../../store/useUserStore';
 import axiosInstance from '../../Axios';
+import { useNavigate } from 'react-router-dom';
 
 interface PollOption {
     text: string;
 }
 
 interface Poll {
-    title: string;
-    options: PollOption[];
-    creator: string;
-    endDate: string;
-    isActive: boolean;
+    data: {
+        title: string;
+        options: PollOption[];
+        creator: string;
+        endDate: string;
+        isActive: boolean;
+    }
+
 }
 
 const CreatePoll: React.FC = () => {
@@ -22,6 +26,7 @@ const CreatePoll: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [endDate, setEndDate] = useState<string>('');
     const [success, setSuccess] = useState<boolean>(false);
+    const navigate = useNavigate()
     const addPoll = usePollStore(state => state.addPoll);
     const user = useUserStore(state => state);
 
@@ -73,21 +78,25 @@ const CreatePoll: React.FC = () => {
         setLoading(true);
 
         try {
-            const response = await axiosInstance.post<Poll>('/polls', {
+            const response = await axiosInstance.post<Poll>('/polls/createPoll', {
                 title: question,
                 options: filteredOptions.map(option => ({ text: option })),
                 creator: user.userId,
+                userName: user.userName,
                 endDate: endDateObj.toISOString(),
                 isActive: true
             });
 
             if (response.status === 201) {
                 const createdPoll = response.data;
-                addPoll(createdPoll.title, createdPoll.options.map(option => option.text));
+                console.log("craetedPoll =>", createdPoll)
+                addPoll(createdPoll.data.title, createdPoll.data.options.map(option => option.text));
                 setSuccess(true);
                 setQuestion('');
                 setOptions(['', '']);
                 setEndDate('');
+                navigate('/')
+                
             } else {
                 setError('Failed to create poll. Please try again.');
             }
@@ -98,6 +107,8 @@ const CreatePoll: React.FC = () => {
             setLoading(false);
         }
     };
+
+    console.log(usePollStore(state => state.polls))
 
     return (
         <div className="create-poll-container">
