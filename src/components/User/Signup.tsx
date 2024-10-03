@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { ISignupRequest, ISignupResponse } from "../../type";
 import axiosInstance from "../../Axios";
 import toast from "react-hot-toast";
-import useUserStore, { SetUserActionType } from "../../store/useUserStore";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
@@ -12,7 +11,6 @@ const Signup = () => {
     const [password, setPassword] = useState<string>("");
 
     const navigate = useNavigate()
-    const setUser = useUserStore((state) => state.setUser)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault()

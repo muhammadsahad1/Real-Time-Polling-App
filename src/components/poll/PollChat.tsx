@@ -12,7 +12,6 @@ interface PollChatProps {
 }
 
 interface Message {
-
     _id: string;
     content: string;
     sender: {
@@ -28,9 +27,12 @@ const PollChat: React.FC<PollChatProps> = ({ pollId, userId, username, isVisible
     const [newMessage, setNewMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [typingUsers, setTypingUsers] = useState<{ [key: string]: string }>({});
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const typingTimeoutRef = useRef<{ [key: string]: number }>({});
+    const debouncedEmitTyping = useRef<number>();
 
-    const socket = useSocket()
+    const socket = useSocket();
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -46,27 +48,79 @@ const PollChat: React.FC<PollChatProps> = ({ pollId, userId, username, isVisible
         scrollToBottom();
     }, [messages]);
 
-    // real time updation
     useEffect(() => {
         if (socket) {
-
             socket.emit('joinPoll', pollId);
 
-            socket.on('receiveMessage', (messageData) => {
-                setMessages((prevMessage) => [...prevMessage, messageData])
-            })
+            socket.on('receiveMessage', (messageData: Message) => {
+                setMessages((prevMessages) => [...prevMessages, messageData]);
+                // Clear typing indicator for the user who sent the message
+                if (messageData.sender._id) {
+                    setTypingUsers((prev) => {
+                        const updated = { ...prev };
+                        delete updated[messageData.sender._id];
+                        return updated;
+                    });
+                }
+            });
+
+            socket.on('userTyping', (data) => {
+                const { userId, username } = data;
+                if (userId && userId !== socket.id) {
+                    setTypingUsers((prev) => ({ ...prev, [userId]: username }));
+
+                    // Clear previous timeout if exists
+                    if (typingTimeoutRef.current[userId]) {
+                        window.clearTimeout(typingTimeoutRef.current[userId]);
+                    }
+
+                    // Set new timeout
+                    typingTimeoutRef.current[userId] = window.setTimeout(() => {
+                        setTypingUsers((prev) => {
+                            const updated = { ...prev };
+                            delete updated[userId];
+                            return updated;
+                        });
+                    }, 3000); // Remove typing indicator after 3 seconds of no updates
+                }
+            });
+
+            socket.on('userStopTyping', (data) => {
+                const { userId } = data;
+                if (userId) {
+                    setTypingUsers((prev) => {
+                        const updated = { ...prev };
+                        delete updated[userId];
+                        return updated;
+                    });
+
+                    // Clear timeout if exists
+                    if (typingTimeoutRef.current[userId]) {
+                        window.clearTimeout(typingTimeoutRef.current[userId]);
+                        delete typingTimeoutRef.current[userId];
+                    }
+                }
+            });
+
             return () => {
-                socket.off('receiveMessage')
-            }
+                socket.off('receiveMessage');
+                socket.off('userTyping');
+                socket.off('userStopTyping');
+
+                // Clear all timeouts
+                Object.values(typingTimeoutRef.current).forEach(timeout =>
+                    window.clearTimeout(timeout)
+                );
+                typingTimeoutRef.current = {};
+            };
         }
-    })
+    }, [socket, pollId]);
 
     const fetchMessages = async () => {
         try {
             setIsLoading(true);
             setError(null);
             const response = await axiosInstance.get(`/messages/${pollId}`);
-            console.log("res -->", response.data)
             setMessages(response.data.messages || []);
         } catch (error) {
             console.error('Error fetching messages:', error);
@@ -76,16 +130,33 @@ const PollChat: React.FC<PollChatProps> = ({ pollId, userId, username, isVisible
         }
     };
 
-    const handleSendMessage = async () => {
+    const handleSetMessage = (value: string) => {
+        setNewMessage(value);
 
-        if(!socket){
-            console.log("not socket");
-            return 
+        if (!socket || !userId || !username) return;
+
+        // Clear previous timeout
+        if (debouncedEmitTyping.current) {
+            window.clearTimeout(debouncedEmitTyping.current);
         }
 
-        if (!newMessage.trim() || !userId || !username) return;
+        if (value.trim()) {
+            // Emit typing event with debounce
+            debouncedEmitTyping.current = window.setTimeout(() => {
+                socket.emit('typing', { pollId, userId, username });
+            }, 300);
+        } else {
+            // Immediately emit stop typing if the input is empty
+            socket.emit('stopTyping', { pollId, userId });
+        }
+    };
+
+    const handleSendMessage = async () => {
+        if (!socket || !newMessage.trim() || !userId || !username) return;
 
         try {
+            // Stop typing when sending message
+            socket.emit('stopTyping', { pollId, userId });
             await axiosInstance.post(`/messages/${pollId}/${userId}`, {
                 content: newMessage,
                 username,
@@ -96,20 +167,23 @@ const PollChat: React.FC<PollChatProps> = ({ pollId, userId, username, isVisible
                 message: newMessage,
                 senderId: userId,
                 username: username
-            }
+            };
 
-            socket?.emit('sendMessage', { ...newMsg })
+            socket.emit('sendMessage', { ...newMsg });
 
+            // Clear the input
             setNewMessage('');
-            fetchMessages();
-            console.log("stat mesage =>",messages);
-            
+
+            // Update messages with the response from the server
+            // if (response.data.message) {
+            //     setMessages(prevMessages => [...prevMessages, response.data.message]);
+            // }
+
         } catch (error) {
             console.error('Error sending message:', error);
             setError('Failed to send message. Please try again.');
         }
     };
-
 
     if (!isVisible) return null;
 
@@ -151,11 +225,19 @@ const PollChat: React.FC<PollChatProps> = ({ pollId, userId, username, isVisible
                     <div ref={messagesEndRef}></div>
                 </div>
 
+                {/* Typing Indicator */}
+                {Object.keys(typingUsers).length > 0 && (
+                    <div className="typing-indicator">
+                        {Object.values(typingUsers).join(', ')}
+                        {Object.keys(typingUsers).length > 1 ? ' are typing...' : ' is typing...'}
+                    </div>
+                )}
+
                 <div className="poll-chat-input">
                     <input
                         type="text"
                         value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
+                        onChange={(e) => handleSetMessage(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                         placeholder="Type a message..."
                     />

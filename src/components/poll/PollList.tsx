@@ -3,7 +3,6 @@ import axiosInstance from '../../Axios';
 import '../../css/poll.css';
 import PollChat from './PollChat';
 import { useSocket } from '../../context/SocketContext';
-import usePollStore from '../../store/usePollStore';
 
 interface PollOption {
     text: string;
@@ -181,14 +180,6 @@ const PollList: React.FC<pollListProps> = ({ userId, username }) => {
                             ))}
                         </div>
                         <div className="poll-footer">
-
-                            {/* {votingStatus[poll._id] && (
-                                <div className={`status-message ${votingStatus[poll._id]}`}>
-                                    {votingStatus[poll._id] === 'voting' && 'Voting...'}
-                                    {votingStatus[poll._id] === 'success' && 'Vote recorded!'}
-                                    {votingStatus[poll._id] === 'error' && 'Error voting'}
-                                </div>
-                            )} */}
                             <button onClick={() => toggleChatVisibility(poll._id)} className="chat-toggle">
                                 Chat
                             </button>
