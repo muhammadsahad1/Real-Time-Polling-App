@@ -1,6 +1,9 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../Axios';
-import '../../css/poll.css'
+import '../../css/poll.css';
+import PollChat from './PollChat';
+import { useSocket } from '../../context/SocketContext';
+import usePollStore from '../../store/usePollStore';
 
 interface PollOption {
     text: string;
@@ -20,15 +23,47 @@ interface Poll {
     isActive: boolean;
     totalVotes: number;
 }
-const PollList = () => {
+
+interface pollListProps {
+    userId: string | null;
+    username: string | null;
+}
+
+const PollList: React.FC<pollListProps> = ({ userId, username }) => {
     const [polls, setPolls] = useState<Poll[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [votingStatus, setVotingStatus] = useState<{ [key: string]: string }>({});
+    const [activeChatPollId, setActiveChatPollId] = useState<string | null>(null);
+    const [userVotes, setUserVotes] = useState<{ [pollId: string]: number | null }>({});
+    const socket = useSocket();
 
     useEffect(() => {
         fetchPolls();
-    }, []);
+
+        polls.forEach(poll => {
+            socket?.emit('joinPoll', poll._id);
+            socket?.on('voteUpdated', (data) => {
+                const updatedPolls = polls.map(poll => {
+                    if (poll._id === data.pollId) {
+                        const updatedOptions = [...poll.options];
+                        updatedOptions[data.optionIndex].votes += 1;
+                        return { ...poll, options: updatedOptions, totalVotes: poll.totalVotes + 1 };
+                    }
+                    return poll;
+                });
+                setPolls(updatedPolls);
+            });
+        });
+
+        return () => {
+            // Cleanup the event listeners on component unmount
+            polls.forEach(_poll => {
+                socket?.off('voteUpdated');
+            });
+        };
+    }, [polls]);
+
 
     const fetchPolls = async () => {
         try {
@@ -43,9 +78,28 @@ const PollList = () => {
 
     const handleVote = async (pollId: string, optionIndex: number) => {
         setVotingStatus(prev => ({ ...prev, [pollId]: 'voting' }));
+        const previousVoteIndex = userVotes[pollId];
         try {
-            await axiosInstance.post(`/polls/${pollId}/vote`, { optionIndex });
-            await fetchPolls(); // Refresh polls after voting
+            if (previousVoteIndex !== null) {
+                await axiosInstance.post(`/polls/${pollId}/${userId}/vote`, { optionIndex });
+                if (previousVoteIndex !== optionIndex) {
+
+                    const previousVoteOption = polls.find(poll => poll._id === pollId)?.options[previousVoteIndex];
+                    if (previousVoteOption) {
+                        previousVoteOption.votes -= 1;
+                    }
+                }
+            } else {
+                // If no previous vote, just add a new vote
+                await axiosInstance.post(`/polls/${pollId}/vote`, { optionIndex });
+            }
+
+            // Emit the vote event
+            socket?.emit('vote', pollId, optionIndex);
+
+            // Update the user's votes state
+            setUserVotes(prev => ({ ...prev, [pollId]: optionIndex }));
+
             setVotingStatus(prev => ({ ...prev, [pollId]: 'success' }));
             setTimeout(() => {
                 setVotingStatus(prev => {
@@ -53,7 +107,7 @@ const PollList = () => {
                     delete newStatus[pollId];
                     return newStatus;
                 });
-            }, 2000);
+            }, 1000);
         } catch (error) {
             setVotingStatus(prev => ({ ...prev, [pollId]: 'error' }));
             setTimeout(() => {
@@ -66,12 +120,16 @@ const PollList = () => {
         }
     };
 
+    const toggleChatVisibility = (pollId: string) => {
+        setActiveChatPollId(activeChatPollId === pollId ? null : pollId);
+    };
+
     if (loading) return <div className="loader"></div>;
     if (error) return <div className="error-message">{error}</div>;
 
     return (
         <div className="poll-list-container">
-            <h1>Active Polls</h1>
+            {/* <h1>Active Polls</h1> */}
             <div className="poll-grid">
                 {polls.map(poll => (
                     <div key={poll._id} className="poll-card">
@@ -123,17 +181,29 @@ const PollList = () => {
                             ))}
                         </div>
                         <div className="poll-footer">
-                            <div className="total-votes">
-                                Total votes: {poll.totalVotes}
-                            </div>
-                            {votingStatus[poll._id] && (
+
+                            {/* {votingStatus[poll._id] && (
                                 <div className={`status-message ${votingStatus[poll._id]}`}>
                                     {votingStatus[poll._id] === 'voting' && 'Voting...'}
                                     {votingStatus[poll._id] === 'success' && 'Vote recorded!'}
                                     {votingStatus[poll._id] === 'error' && 'Error voting'}
                                 </div>
-                            )}
+                            )} */}
+                            <button onClick={() => toggleChatVisibility(poll._id)} className="chat-toggle">
+                                Chat
+                            </button>
                         </div>
+
+
+                        {activeChatPollId === poll._id && (
+                            <PollChat
+                                pollId={poll._id}
+                                userId={userId}
+                                username={username}
+                                isVisible={true}
+                                onClose={() => setActiveChatPollId(null)}
+                            />
+                        )}
                     </div>
                 ))}
             </div>

@@ -13,7 +13,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     useEffect(() => {
         const newSocket = io(import.meta.env.VITE_BASE_URL.replace('/api/', ''))
-        setSocket(socket)
+        setSocket(newSocket)
 
         return () => {
             newSocket.disconnect()

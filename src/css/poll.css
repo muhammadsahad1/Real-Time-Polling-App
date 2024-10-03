@@ -1,458 +1,345 @@
-/* PollList.css */
+/* Global styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+}
+
+/* Loader */
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.loader::before {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 5px solid rgba(0, 0, 0, 0.1);
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error Message */
+.error-message {
+    color: red;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Poll List Container */
 .poll-list-container {
-    max-width: 100%;
+    padding: 20px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 40px 20px;
 }
 
 .poll-list-container h1 {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin-bottom: 30px;
-    color: #1a1a1a;
     text-align: center;
+    margin-bottom: 20px;
 }
 
+/* Poll Grid */
 .poll-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
 }
 
+/* Poll Card */
 .poll-card {
     background-color: white;
-    border-radius: 12px;
+    border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    padding: 40px;
-    display: flex;
-    flex-direction: column;
-    width: 100px
+    padding: 20px;
+    transition: transform 0.3s ease;
 }
 
 .poll-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Poll Header */
 .poll-header h2 {
-    font-size: 2.2rem;
-    font-weight: 600;
-    margin-bottom: 25px;
-    color: #1a1a1a;
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
 }
 
 .poll-meta {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 30px;
-    padding: 0 20px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #777;
 }
 
-.creator, .end-date {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #4b5563;
-    font-size: 0.8rem;
+.poll-meta .creator svg,
+.poll-meta .end-date svg {
+    margin-right: 5px;
 }
 
-.creator svg, .end-date svg {
-    width: 20px;
-    height: 20px;
-    color: #6b7280;
-}
-
-.poll-options {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-}
-
-.option {
-    background-color: #f3f4f6;
-    padding: 25px 30px;
-    border-radius: 12px;
-    border: 2px solid transparent;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: left;
+/* Poll Options */
+.poll-options button {
+    display: block;
     width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.option:hover:not(:disabled) {
-    background-color: #e5e7eb;
-    border-color: #6b7280;
+.poll-options button:hover {
+    background-color: #f0f0f0;
 }
 
-.option:disabled {
+.poll-options button:disabled {
+    background-color: #e0e0e0;
     cursor: not-allowed;
-    opacity: 0.7;
 }
 
-.option.voting {
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
-}
-
+/* Option Header */
 .option-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-}
-
-.option-text {
-    font-weight: 500;
-    font-size: 1.4rem;
-    color: #1a1a1a;
-}
-
-.vote-count {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #4b5563;
-    font-size: 1.2rem;
-    font-weight: 500;
+    font-size: 14px;
 }
 
 .vote-count svg {
-    width: 20px;
-    height: 20px;
+    margin-right: 5px;
 }
 
+/* Progress Bar */
 .progress-bar {
     width: 100%;
-    height: 15px;
-    background-color: #d1d5db;
-    border-radius: 8px;
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
     overflow: hidden;
+    margin-top: 5px;
 }
 
 .progress {
     height: 100%;
-    background-color: #3b82f6;
-    transition: width 0.5s ease;
+    background-color: #3498db;
+    transition: width 0.3s ease;
 }
 
+/* Poll Footer */
 .poll-footer {
-    margin-top: 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
+    margin-top: 10px;
 }
 
 .total-votes {
-    color: #4b5563;
-    font-size: 1.2rem;
-    font-weight: 500;
+    font-size: 14px;
+    color: #555;
 }
 
 .status-message {
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-weight: 500;
-    font-size: 1.1rem;
-}
-
-.status-message.voting {
-    background-color: #dbeafe;
-    color: #1e40af;
-}
-
-.status-message.success {
-    background-color: #dcfce7;
-    color: #166534;
+    font-size: 14px;
+    color: #3498db;
 }
 
 .status-message.error {
-    background-color: #fee2e2;
-    color: #991b1b;
+    color: red;
 }
 
-.loader {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3b82f6;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    margin: 60px auto;
+/* Poll Chat Button */
+.poll-footer button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.poll-footer button:hover {
+    background-color: #2980b9;
 }
 
-.error-message {
-    background-color: #fee2e2;
-    border: 1px solid #ef4444;
-    color: #991b1b;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    margin: 30px auto;
-    max-width: 800px;
-    font-size: 1.2rem;
-    font-weight: 500;
-}
-
-/* Additional utility classes */
-.text-truncate {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.fade-in {
-    animation: fadeIn 0.5s ease-in;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+.poll-footer button:disabled {
+    background-color: #ccc;
 }
 
 /* Responsive styles */
-@media (max-width: 1400px) {
-    .poll-list-container {
-        max-width: 100%;
-        padding: 30px;
-    }
-
-    .poll-card {
-        padding: 35px;
-    }
-
-    .poll-header h2 {
-        font-size: 2rem;
-    }
-}
-
-@media (max-width: 1200px) {
-    .poll-list-container {
-        padding: 25px;
-    }
-
-    .poll-card {
-        padding: 30px;
-    }
-
-    .poll-header h2 {
-        font-size: 1.8rem;
-    }
-
-    .option-text {
-        font-size: 1.3rem;
-    }
-
-    .creator, .end-date, .vote-count {
-        font-size: 1.1rem;
-    }
-}
-
 @media (max-width: 768px) {
-    .poll-list-container {
+    .poll-card {
         padding: 15px;
     }
 
-    .poll-list-container h1 {
-        font-size: 2rem;
-        margin-bottom: 20px;
-    }
-
-    .poll-card {
-        padding: 20px;
-    }
-
-    .poll-meta {
-        flex-direction: column;
-        gap: 10px;
-        padding: 0;
-    }
-
-    .option {
-        padding: 20px;
-    }
-
-    .option-text {
-        font-size: 1.2rem;
-    }
-
-    .poll-footer {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 0;
+    .poll-grid {
+        grid-template-columns: 1fr;
     }
 }
 
-/* Print styles */
-@media print {
+@media (max-width: 480px) {
     .poll-list-container {
-        max-width: 100%;
-        padding: 0;
+        padding: 10px;
     }
 
-    .poll-card {
-        box-shadow: none;
-        border: 1px solid #ddd;
-        break-inside: avoid;
-    }
-
-    .option:hover {
-        background-color: #f3f4f6;
-        border-color: transparent;
-    }
-
-    .progress {
-        print-color-adjust: exact;
+    .poll-footer button {
+        width: 100%;
     }
 }
 
 
-.chat-toggle-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1.1rem;
-    transition: background-color 0.2s;
+
+
+
+
+
+
+
+/* Poll Chat */
+.poll-chat-container {
+    background-color: white;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 500px; /* Adjust width as needed */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 20px; /* Add spacing above the chat */
 }
 
-.chat-toggle-btn.active {
-    background-color: #1d4ed8;
-}
-
-.chat-toggle-btn svg {
-    width: 20px;
-    height: 20px;
-}
-
-.chat-container {
-    margin-top: 20px;
-    border-top: 1px solid #e5e7eb;
-    padding-top: 20px;
-}
-
-.chat-header {
+.poll-chat-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #3498db;
+    color: white;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 
-.chat-header h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
+.poll-chat-header h3 {
+    margin: 0;
 }
 
-.close-chat {
-    font-size: 1.5rem;
+.poll-chat-header .close-button {
     background: none;
     border: none;
+    font-size: 20px;
+    color: white;
     cursor: pointer;
-    color: #6b7280;
 }
 
-.chat-messages {
-    max-height: 300px;
+/* Chat messages section */
+.poll-chat-messages {
+    flex-grow: 1;
     overflow-y: auto;
-    margin-bottom: 15px;
+    max-height: 300px; /* Set a max height for the chat area */
     padding: 10px;
-    background-color: #f9fafb;
-    border-radius: 8px;
+    background-color: #f9f9f9;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.poll-chat-messages .message-wrapper {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.poll-chat-messages .own-message {
+    justify-content: flex-end;
 }
 
 .message {
-    margin-bottom: 15px;
+    background-color: #3498db;
+    color: white;
     padding: 10px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    max-width: 60%;
+    word-wrap: break-word;
 }
 
-.message.own-message {
-    background-color: #dbeafe;
-    margin-left: 20%;
+.message.other-message {
+    background-color: #e0e0e0;
+    color: black;
 }
 
-.message-header {
-    display: flex;
-    justify-content: space-between;
+.sender-name {
+    font-weight: bold;
     margin-bottom: 5px;
-    font-size: 0.9rem;
 }
 
-.message-username {
-    font-weight: 600;
-    color: #4b5563;
-}
-
-.message-time {
-    color: #6b7280;
-}
-
-.message-content {
-    color: #1f2937;
-}
-
-.chat-input {
+/* Poll Chat Input */
+.poll-chat-input {
     display: flex;
-    gap: 10px;
-}
-
-.chat-input input {
-    flex-grow: 1;
-    padding: 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 1rem;
-}
-
-.chat-input button {
     padding: 10px;
-    background-color: #3b82f6;
+    border-top: 1px solid #ddd;
+    background-color: white;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.poll-chat-input input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.poll-chat-input button {
+    background-color: #3498db;
     color: white;
     border: none;
-    border-radius: 6px;
+    padding: 10px 15px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.3s ease;
 }
 
-.chat-input button:hover {
-    background-color: #2563eb;
+.poll-chat-input button:hover {
+    background-color: #2980b9;
 }
 
-.chat-input button svg {
-    width: 20px;
-    height: 20px;
-}
-
+/* Responsive styles */
 @media (max-width: 768px) {
-    .chat-container {
-        margin-top: 15px;
-        padding-top: 15px;
+    .poll-chat-container {
+        width: 100%;
+        max-width: 100%; /* Full width on small screens */
     }
 
-    .chat-messages {
-        max-height: 250px;
+    .poll-chat-input input {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .poll-chat-input input {
+        font-size: 12px;
     }
 
-    .message.own-message {
-        margin-left: 10%;
+    .poll-chat-header h3 {
+        font-size: 16px;
     }
 }

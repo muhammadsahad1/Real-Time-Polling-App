@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import useUserStore from '../../store/useUserStore'
 import { useNavigate } from 'react-router-dom'
 import PollList from '../poll/PollList'
+import usePollStore from '../../store/usePollStore'
 
 const Home = () => {
     const userState = useUserStore(state => state)
@@ -19,6 +20,8 @@ const Home = () => {
         }
     }
 
+
+    console.log(usePollStore(state => state.polls))
     return (
         <>
 
@@ -28,7 +31,7 @@ const Home = () => {
                 </h2>
                 <button className='create-poll-btn' onClick={handleCreatePoll}>Create New Poll</button>
 
-                <PollList />
+                <PollList userId={userState.userId} username={userState.userName} />
 
             </div>
         </>

@@ -14,30 +14,32 @@ const Login = () => {
     const setUser = useUserStore((state) => state.setUser)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+        e.preventDefault();
 
-        const loginData: ILoginRequest = { userEmail, password }
+        const loginData: ILoginRequest = { userEmail, password };
         try {
-            const response = await axiosInstance.post<ILoginResponse>('/users/login', loginData)
-            console.log("res in login =>", response.data)
-            const { message } = response.data;
+            const response = await axiosInstance.post<ILoginResponse>('/users/login', loginData);
+
             if (response.status === 200) {
-                const { _id, name, email } = response.data.findUser
-
-                setUser({ type: SetUserActionType.UserId, value: _id })
-                setUser({ type: SetUserActionType.Email, value: email })
-                setUser({ type: SetUserActionType.Name, value: name })
-                toast.success('Login successfull')
-                navigate('/')
-            } else {
-                toast.error(message)
+                const { _id, name, email } = response.data.findUser;
+                setUser({ type: SetUserActionType.UserId, value: _id });
+                setUser({ type: SetUserActionType.Email, value: email });
+                setUser({ type: SetUserActionType.Name, value: name });
+                toast.success('Login successful');
+                navigate('/');
             }
-
         } catch (error: any) {
-            toast.error(error)
+            if (error.response) {
+                const errorMessage = error.response.data.message || 'An error occurred during login.';
+                toast.error(errorMessage);
+            } else if (error.request) {
+                toast.error('No response from server. Please try again later.');
+            } else {
+                toast.error('An unexpected error occurred: ' + error.message);
+            }
         }
+    };
 
-    }
 
     return (
         <div className="login-container">
