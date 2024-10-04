@@ -9,7 +9,6 @@ export const useSocket = () => {
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [socket, setSocket] = useState<Socket | null>(null)
-    console.log("url =>",import.meta.env.VITE_BASE_URL);
     
     useEffect(() => {
         const newSocket = io(import.meta.env.VITE_BASE_URL.replace('/api/', ''))
