@@ -9,7 +9,7 @@ export const useSocket = () => {
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [socket, setSocket] = useState<Socket | null>(null)
-    
+
     useEffect(() => {
         const newSocket = io(import.meta.env.VITE_BASE_URL.replace('/api/', ''))
         setSocket(newSocket)

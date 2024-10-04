@@ -53,6 +53,8 @@ const PollChat: React.FC<PollChatProps> = ({ pollId, userId, username, isVisible
             socket.emit('joinPoll', pollId);
 
             socket.on('receiveMessage', (messageData: Message) => {
+                console.log("after message =>", messageData);
+
                 setMessages((prevMessages) => [...prevMessages, messageData]);
                 // Clear typing indicator for the user who sent the message
                 if (messageData.sender._id) {
@@ -94,7 +96,6 @@ const PollChat: React.FC<PollChatProps> = ({ pollId, userId, username, isVisible
                         return updated;
                     });
 
-                    // Clear timeout if exists
                     if (typingTimeoutRef.current[userId]) {
                         window.clearTimeout(typingTimeoutRef.current[userId]);
                         delete typingTimeoutRef.current[userId];
@@ -135,18 +136,16 @@ const PollChat: React.FC<PollChatProps> = ({ pollId, userId, username, isVisible
 
         if (!socket || !userId || !username) return;
 
-        // Clear previous timeout
         if (debouncedEmitTyping.current) {
             window.clearTimeout(debouncedEmitTyping.current);
         }
 
         if (value.trim()) {
-            // Emit typing event with debounce
             debouncedEmitTyping.current = window.setTimeout(() => {
                 socket.emit('typing', { pollId, userId, username });
             }, 300);
         } else {
-            // Immediately emit stop typing if the input is empty
+
             socket.emit('stopTyping', { pollId, userId });
         }
     };
@@ -171,10 +170,9 @@ const PollChat: React.FC<PollChatProps> = ({ pollId, userId, username, isVisible
 
             socket.emit('sendMessage', { ...newMsg });
 
-            // Clear the input
             setNewMessage('');
 
-            // Update messages with the response from the server
+
             // if (response.data.message) {
             //     setMessages(prevMessages => [...prevMessages, response.data.message]);
             // }
