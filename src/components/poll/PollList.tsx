@@ -3,6 +3,7 @@ import axiosInstance from '../../Axios';
 import '../../css/poll.css';
 import PollChat from './PollChat';
 import { useSocket } from '../../context/SocketContext';
+import toast from 'react-hot-toast';
 
 interface PollOption {
     text: string;
@@ -78,6 +79,13 @@ const PollList: React.FC<pollListProps> = ({ userId, username }) => {
     const handleVote = async (pollId: string, optionIndex: number) => {
         setVotingStatus(prev => ({ ...prev, [pollId]: 'voting' }));
         const previousVoteIndex = userVotes[pollId];
+
+        if (!userId) {
+            toast.error('Must need to login')
+            return
+        }
+
+
         try {
             if (previousVoteIndex !== null) {
                 await axiosInstance.post(`/polls/${pollId}/${userId}/vote`, { optionIndex });

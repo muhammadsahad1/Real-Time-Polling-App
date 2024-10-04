@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import axiosInstance from '../../Axios';
 import '../../css/poll.css'
 import { useSocket } from '../../context/SocketContext';
+import toast from 'react-hot-toast';
 
 interface PollChatProps {
     pollId: string;
@@ -154,6 +155,11 @@ const PollChat: React.FC<PollChatProps> = ({ pollId, userId, username, isVisible
     const handleSendMessage = async () => {
         if (!socket || !newMessage.trim() || !userId || !username) return;
 
+        if (!userId) {
+            toast.error('Must need to login')
+            return
+        }
+
         try {
             // Stop typing when sending message
             socket.emit('stopTyping', { pollId, userId });
@@ -163,6 +169,7 @@ const PollChat: React.FC<PollChatProps> = ({ pollId, userId, username, isVisible
             });
 
             const newMsg = {
+                _id: `${Date.now()}`,
                 pollId: pollId,
                 message: newMessage,
                 senderId: userId,
@@ -224,7 +231,6 @@ const PollChat: React.FC<PollChatProps> = ({ pollId, userId, username, isVisible
                     <div ref={messagesEndRef}></div>
                 </div>
 
-                {/* Typing Indicator */}
                 {Object.keys(typingUsers).length > 0 && (
                     <div className="typing-indicator">
                         {Object.values(typingUsers).join(', ')}
