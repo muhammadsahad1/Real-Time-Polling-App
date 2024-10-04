@@ -54,6 +54,7 @@ const PollChat: React.FC<PollChatProps> = ({ pollId, userId, username, isVisible
 
             socket.on('receiveMessage', (messageData: Message) => {
                 console.log("after message =>", messageData);
+                console.log("in messages state =>", messages);
 
                 setMessages((prevMessages) => [...prevMessages, messageData]);
                 // Clear typing indicator for the user who sent the message
