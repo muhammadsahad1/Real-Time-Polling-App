@@ -3,7 +3,7 @@ import axiosInstance from '../../Axios';
 import '../../css/poll.css';
 import PollChat from './PollChat';
 import { useSocket } from '../../context/SocketContext';
-import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface PollOption {
     text: string;
@@ -37,6 +37,7 @@ const PollList: React.FC<pollListProps> = ({ userId, username }) => {
     const [activeChatPollId, setActiveChatPollId] = useState<string | null>(null);
     const [userVotes, setUserVotes] = useState<{ [pollId: string]: number | null }>({});
     const socket = useSocket();
+    const navigate = useNavigate()
 
     useEffect(() => {
         fetchPolls();
@@ -57,7 +58,7 @@ const PollList: React.FC<pollListProps> = ({ userId, username }) => {
         });
 
         return () => {
-            // Cleanup the event listeners on component unmount
+
             polls.forEach(_poll => {
                 socket?.off('voteUpdated');
             });
@@ -81,7 +82,7 @@ const PollList: React.FC<pollListProps> = ({ userId, username }) => {
         const previousVoteIndex = userVotes[pollId];
 
         if (!userId) {
-            toast.error('Must need to login')
+            navigate('/login')
             return
         }
 

@@ -3,6 +3,7 @@ import axiosInstance from '../../Axios';
 import '../../css/poll.css'
 import { useSocket } from '../../context/SocketContext';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface PollChatProps {
     pollId: string;
@@ -34,6 +35,7 @@ const PollChat: React.FC<PollChatProps> = ({ pollId, userId, username, isVisible
     const debouncedEmitTyping = useRef<number>();
 
     const socket = useSocket();
+    const navigate = useNavigate()
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -156,10 +158,9 @@ const PollChat: React.FC<PollChatProps> = ({ pollId, userId, username, isVisible
         if (!socket || !newMessage.trim() || !userId || !username) return;
 
         if (!userId) {
-            toast.error('Must need to login')
+            navigate('/login')
             return
         }
-
         try {
             // Stop typing when sending message
             socket.emit('stopTyping', { pollId, userId });
