@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import axiosInstance from '../../Axios';
 import '../../css/poll.css'
 import { useSocket } from '../../context/SocketContext';
-import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 interface PollChatProps {
